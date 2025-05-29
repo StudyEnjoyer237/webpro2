@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Drawing App</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    #drawing-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fff;
+      border: 2px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    #drawing-canvas {
+      cursor: crosshair;
+      border: 1px solid #ccc;
+    }
+
+    #controls {
+      display: flex;
+      margin-top: 10px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-btn {
+      margin: 5px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      background-color: #333;
+      color: white;
+    }
+
+    .control-input {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="drawing-container">
+    <canvas id="drawing-canvas" width="800" height="400"></canvas>
+    <div id="controls">
+      <button class="control-btn" onclick="clearCanvas()">Clear</button>
+      <input type="color" class="control-input" id="colorPicker" value="#000000" onchange="changeColor()">
+      <input type="range" class="control-input" id="widthSlider" min="1" max="20" value="2" onchange="changeWidth()">
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('drawing-canvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    function getMousePos(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      };
+    }
+
+    function startDrawing(event) {
+      isDrawing = true;
+      const pos = getMousePos(event);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(event) {
+      if (!isDrawing) return;
+      const pos = getMousePos(event);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      ctx.closePath();
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function changeColor() {
+      const colorPicker = document.getElementById('colorPicker');
+      ctx.strokeStyle = colorPicker.value;
+    }
+
+    function changeWidth() {
+      const widthSlider = document.getElementById('widthSlider');
+      ctx.lineWidth = widthSlider.value;
+    }
+
+    // Set initial stroke style
+    changeColor();
+    changeWidth();
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+  </script>
+</body>
+</html>
